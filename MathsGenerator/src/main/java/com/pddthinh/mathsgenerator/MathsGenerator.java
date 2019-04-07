@@ -11,7 +11,7 @@ import java.util.Random;
 public class MathsGenerator {
     //region Definition
     private static final int MAX_RANDOM_DIGIT = 10;
-    private static final int MAX_LINE_PER_PAGE = 50;
+    private static final int MAX_LINE_PER_PAGE = 18;
     private static final int MAX_COLUMN_PER_PAGE = 4;
 
     enum Operand {
@@ -72,6 +72,7 @@ public class MathsGenerator {
 
         int column = 0;
         int counter = 1;
+        int itemPerPage = MAX_COLUMN_PER_PAGE * MAX_LINE_PER_PAGE;
         StringBuilder buffer = new StringBuilder();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outFile))) {
             for (MathInfo m : data) {
@@ -87,9 +88,18 @@ public class MathsGenerator {
                 if (column >= MAX_COLUMN_PER_PAGE) {
                     writer.write(buffer.toString());
                     writer.newLine();
+                    writer.write(";\n;\n");
 
                     buffer.setLength(0);
                     counter ++;
+
+                    continue;
+                }
+
+                if (counter + MAX_LINE_PER_PAGE * column > itemPerPage) {
+                	buffer.setLength(0);
+                	column = 0;
+                	counter = 1;
                 }
             }
         } catch (Exception ex) {
@@ -100,7 +110,7 @@ public class MathsGenerator {
 
     private void execute(int numFile) {
         for (int j = 0; j < numFile; j++) {
-            for (int i = 0; i < (MAX_LINE_PER_PAGE * MAX_COLUMN_PER_PAGE); i++)
+            for (int i = 0; i < 2 * ((MAX_LINE_PER_PAGE + 1) * MAX_COLUMN_PER_PAGE); i++)
                 mData.add(generateMath());
 
             write2File(mData, j);
